@@ -98,7 +98,8 @@ python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp
 6	变化	变化|发生|意味着|恢复|中
 ```
 ###  4. Levenshtein距离
-计算编辑距离发现同义词
+计算编辑距离发现同义词 </br>
+
 代码示例
 
 ```python
