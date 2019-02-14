@@ -77,4 +77,24 @@ python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp
 ```
 
 ###  3. 语义共现网络的节点相似度
-* -corpus_path 为语料文件，使用三体小说作为训练语料
+语义共现网络本质是根据上下文构建的图，图中的节点是词，边是这个词的上下文相关词。对于语义共现网络的两个节点，如果这两个节点的共同邻居节点越多，说明这两个词的上下文越相似，是同义词的概率越大。例如，对于《三体》小说中的两个词“海王星”和“天王星”，在《三体》语义共现网络中，“海王星”和“天王星”的邻居节点相似度很高。
+
+<img src="https://github.com/tigerchen52/synonym_detection/blob/master/input/img/%E8%AF%AD%E4%B9%89%E7%BD%91%E7%BB%9C.png"  />
+代码示例
+
+```python
+python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp/input_word.txt -process_number 2 -if_use_sn_model True
+```
+输出 :
+```
+5	阵列	阵列|矩形|队列|星体|量子
+9	天空	天空|中|夜空|太阳|消失
+4	海军	海军|航空兵|服役|空军|失败主义
+10	建造	建造|制造|加速器|飞船|太阳系
+3	椅子	椅子|桌子|坐下|沙发|台球桌
+1	海王星	海王星|天王星|土星|卫星|群落
+7	程心	程心|AA|中|罗辑|说
+8	火焰	火焰|光芒|光点|推进器|雪峰
+2	女孩	女孩|接待|冲何|请云|女士
+6	变化	变化|发生|意味着|恢复|中
+```
