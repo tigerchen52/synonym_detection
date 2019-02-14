@@ -118,7 +118,7 @@ python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp
 8	火焰	火焰|火|焰|火星|野火
 4	海军	海军|于海军|陆海空军|海|海军军官
 ```
-###  4. levenshtein距离
+###  4. DPE模型
 undo
 
 
