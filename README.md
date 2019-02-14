@@ -98,3 +98,4 @@ python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp
 2	女孩	女孩|接待|冲何|请云|女士
 6	变化	变化|发生|意味着|恢复|中
 ```
+###  4. levenshtein距离
