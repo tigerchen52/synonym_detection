@@ -46,7 +46,6 @@ python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp
 * -corpus_path 为语料文件，使用三体小说作为训练语料
 * -input_word_path 输入词表，对词表中的词进行同义词挖掘
 * -process_number 2 进程数量
-* -process_number 2 进程数量
 * -if_use_w2v_model True 使用word2vector模型
 
 输人 input_word:
