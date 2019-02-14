@@ -8,7 +8,7 @@
 （1）百度百科同义词 </br>
 （2）word2vector </br>
 （3）语义共现网络的节点相似度 </br>
-（4）levenshtein距离 </br>
+（4）Levenshtein距离 </br>
 （5）DPE模型（undo）[【参考文献】](https://arxiv.org/pdf/1706.08186.pdf) </br>
 
 主要功能
@@ -97,7 +97,7 @@ python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp
 2	女孩	女孩|接待|冲何|请云|女士
 6	变化	变化|发生|意味着|恢复|中
 ```
-###  4. levenshtein距离
+###  4. Levenshtein距离
 计算编辑距离发现同义词
 代码示例
 
