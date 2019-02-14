@@ -1,7 +1,7 @@
 import Levenshtein_model
 import data_utils
 import semantic_network_model
-import baike_crawker_model
+import baike_crawler_model
 import word2vec_model
 import argparse
 import logging
@@ -17,7 +17,7 @@ parser.add_argument('-if_use_pinyin', help='if use the pinyin to calculate simil
 parser.add_argument('-pinyin_weight', help='set the weight of similarity of pinyin, default is 0.0', type=float, default=0.0)
 parser.add_argument('-top_k', help='set the number of synonym we want to get, default is 5', type=int, default=5)
 parser.add_argument('-win_len', help='set the window size of semantic network, default is 5', type=int, default=5)
-parser.add_argument('-if_use_sn_model', help='use semantic model , default is true', type=bool, default=True)
+parser.add_argument('-if_use_sn_model', help='use semantic model , default is False', type=bool, default=False)
 parser.add_argument('-if_use_leven_model', help='use Levenshtein model , default is False', type=bool, default=False)
 parser.add_argument('-if_use_baike_crawler', help='use baike crawler, this model need to connect to the network, default is False', type=bool, default=False)
 parser.add_argument('-if_use_w2v_model', help='use word2vector model , default is False', type=bool, default=False)
@@ -77,7 +77,7 @@ def run():
         word_code_list = list()
         for k, v in input_word_code_dict.items():
             word_code_list.append((k, v))
-        baike_crawker_model.baike_synonym_detect(word_code_list)
+        baike_crawler_model.baike_synonym_detect(word_code_list)
 
     if if_use_w2v_model:
         word2vec_model.synonym_detect(input_word_code_dict, top_k)
