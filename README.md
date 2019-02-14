@@ -9,7 +9,7 @@
 （2）word2vector </br>
 （3）语义共现网络的节点相似度 </br>
 （4）levenshtein距离 </br>
-（5）DPE模型（未完成）[【参考文献】](https://arxiv.org/pdf/1706.08186.pdf) </br>
+（5）DPE模型（undo）[【参考文献】](https://arxiv.org/pdf/1706.08186.pdf) </br>
 
 主要功能
 ========
@@ -99,3 +99,27 @@ python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp
 6	变化	变化|发生|意味着|恢复|中
 ```
 ###  4. levenshtein距离
+计算编辑距离发现同义词
+代码示例
+
+```python
+python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp/input_word.txt -process_number 2 -if_use_leven_model True
+```
+输出 :
+```
+1	海王星	海王星|冥王星|天王星|星|王
+7	程心	程心|请程心|带程心|连程心|从程心
+6	变化	变化|变化很大|动态变化|发生变化|化
+3	椅子	椅子|子|筐子|村子|棒子
+2	女孩	女孩|女孩儿|女孩子|小女孩|女
+10	建造	建造|建造成|造|建|建到
+5	阵列	阵列|列|阵|历列|列为
+9	天空	天空|海阔天空|空|天|天马行空
+8	火焰	火焰|火|焰|火星|野火
+4	海军	海军|于海军|陆海空军|海|海军军官
+```
+###  4. levenshtein距离
+undo
+
+
+
