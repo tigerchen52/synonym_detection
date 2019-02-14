@@ -77,3 +77,4 @@ python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp
 ```
 
 ###  3. 语义共现网络的节点相似度
+* -corpus_path 为语料文件，使用三体小说作为训练语料
