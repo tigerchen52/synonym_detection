@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
 代码示例
 ```python
-python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp/input_word.txt -process_number 2 if_use_w2v_model True
+python synonym_detect -corpus_path  ../input/三体.txt -input_word_path ../temp/input_word.txt -process_number 2 -if_use_w2v_model True
 ```
 参数
 * -corpus_path 为语料文件，使用三体小说作为训练语料
