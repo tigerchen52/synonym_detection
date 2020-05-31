@@ -28,13 +28,14 @@ w2v_cbow = 0
 w2v_binary = 0
 w2v_accuracy = None
 
+
 def synonym_detect(input_word_code_dict, top_k):
     logger.info('start train w2v model.....')
     word2vec()
     logger.info('start w2v synonym detect......')
-    cal_sim(w2v_output, input_word_code_dict, top_k)
+    rs = cal_sim(w2v_output, input_word_code_dict, top_k)
     logger.info('w2v done!!!')
-
+    return rs
 
 
 def word2vec():
@@ -106,13 +107,30 @@ def cal_sim(path, input_word_code_dict, top_k):
     cos = np.matmul(input_word_embed, normal_word_embed_T)
     sorted_id = (-cos).argsort()
     line = ''
+
+    rs = {}
+
     for i, word in enumerate(input_word_list):
         code = input_word_code_dict[word]
-        near_id = sorted_id[i][:top_k]
-        nearst_word = [word_list[x] for x in near_id]
-        line += code + '\t' + word + '\t' + '|'.join(nearst_word) + '\n'
+        near_ids = sorted_id[i][:top_k]
+        nearst_words = [word_list[x] for x in near_ids]
+        line += code + '\t' + word + '\t' + '|'.join(nearst_words) + '\n'
+
+        # print(word)
+        rs[word] = []
+        for nid in near_ids:
+            nword = word_list[nid]
+            if nword == word:
+                continue
+            score = round(cos[i][nid], 6)
+            # print(nid, nword, score)
+            rs[word].append((nword, score))
+
     with open('../output/w2v_synonym.txt', 'w', encoding='utf8') as f:
         f.write(line)
+
+    return rs
+
 
 def cal_sim_valid(path):
     word_list, word_embed, _ = load_embedding(path, {})
@@ -123,11 +141,12 @@ def cal_sim_valid(path):
     sorted_id = (-cos).argsort()
     line = ''
     for i in range(len(sorted_id)):
-        near_id = sorted_id[i][:20]
-        nearst_word = [word_list[x] for x in near_id]
-        line += ','.join(nearst_word) + '\n'
+        near_ids = sorted_id[i][:20]
+        nearst_words = [word_list[x] for x in near_ids]
+        line += ','.join(nearst_words) + '\n'
     with open('../temp/embed_valid.txt', 'w', encoding='utf8') as f:
         f.write(line)
+
 
 if __name__ == "__main__":
     cal_sim_valid(path='../temp/w2v_embed_300.bin')

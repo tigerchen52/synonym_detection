@@ -1,17 +1,17 @@
-python-Levenshtein
-pip3 install pinyin
-jieba
-nltk
-networkx
-bs4
-gensim
+python-Levenshtein==0.12.0
+pinyin==0.4.0
+jieba==0.42.1
+nltk==3.5
+networkx==2.4
+bs4==0.0.1
+gensim==3.8.3
+PyMySQL==0.9.
 
 
+
+# usage:
 # pip3 install -r requirements.txt
-
 # python3 synonym_detect.py -corpus_path ../input/三体.txt -input_word_path ../temp/input_word.txt -process_number 2 -if_use_w2v_model True
-
 # python3 synonym_detect.py -corpus_path ../input/三体.txt -input_word_path ../temp/input_word.txt -process_number 2 -if_use_sn_model True
-
 # python3 synonym_detect.py -corpus_path ../input/三体.txt -input_word_path ../temp/input_word.txt -process_number 2 -if_use_leven_model True
 

@@ -8,7 +8,7 @@ local_file = os.path.split(__file__)[-1]
 logging.basicConfig(
     format='%(asctime)s : %(filename)s : %(funcName)s : %(levelname)s : %(message)s',
     level=logging.INFO)
-jieba.load_userdict('../input/word.dict')
+# jieba.load_userdict('../input/word.dict')
 
 
 def get_stop_words(path):
@@ -101,18 +101,31 @@ def load_word2id(path="../temp/word2id"):
 def load_input_words(base_word_path, word2id, id2word):
     input_word_code_dict = dict()
     index = len(word2id)
-    with open(base_word_path, "r", encoding='utf-8', errors='ignore') as f:
-        line = f.readline()
-        while line:
-            row = line.strip().split('|')
-            word, word_code = row[1], row[0]
-            if word2id is not None and word not in word2id:
-                word2id[word] = index
-                id2word[index] = word
-                index += 1
-            input_word_code_dict[word] = word_code
-            line = f.readline()
-    logger.info('totally {a} words .'.format(a=len(input_word_code_dict)))
+    # with open(base_word_path, "r", encoding='utf-8', errors='ignore') as f:
+    #     line = f.readline()
+    #     while line:
+    #         row = line.strip().split('|')
+    #         word, word_code = row[1], row[0]
+    #         if word2id is not None and word not in word2id:
+    #             word2id[word] = index
+    #             id2word[index] = word
+    #             index += 1
+    #         input_word_code_dict[word] = word_code
+    #         line = f.readline()
+    # logger.info('totally {a} words .'.format(a=len(input_word_code_dict)))
+
+    content = open(base_word_path, "r", encoding='utf-8', errors='ignore').read().strip()
+    words = content.split(',')
+    i = 1
+    for word in words:
+        word_code = str(i)
+        if word2id is not None and word not in word2id:
+            word2id[word] = index
+            id2word[index] = word
+            index += 1
+        input_word_code_dict[word] = word_code
+        i += 1
+
     return input_word_code_dict
 
 
@@ -130,5 +143,4 @@ def preprocess_file(corpus_path, input_word_path, stop_word_path):
     return word2id, word_list, id2word, input_word_code_dict, input_word_id
 
 
-if __name__ == '__main__':
-    preprocess_file(corpus_path='../input/三体.txt', input_word_path='../temp/input_word.txt', stop_word_path='../input/stop_words.txt')
+

@@ -132,12 +132,12 @@ class sn_model():
             processes=10,
             top_k=15,
             graph_path='../temp/network/co_network.txt',
-            input_word_id=None
+            input_word_ids=None
     ):
         self.processes = processes
         self.top_k = top_k
         self.network = read_network(graph_path)
-        self.input_word_id = input_word_id
+        self.input_word_ids = input_word_ids
         self.num_of_nodes = self.network.number_of_nodes()
         self.num_of_edges = self.network.number_of_edges()
 
@@ -165,48 +165,60 @@ class sn_model():
         sorted_dict = [(G.nodes[k]['name'], v) for k, v in sorted_dict if v > 0.25]
         return sorted_dict
 
-    def synonym(self, input_word_id, network, lock, input_word_code_dict, id2word):
+    def synonym(self, input_word_ids, network, lock, input_word_code_dict, id2word):
         line = ''
         cnt = 0
-        for node in input_word_id:
+        rs = {}
+        for node in input_word_ids:
             cnt += 1
             if str(node) not in network.nodes:
                 continue
             node_name = id2word[node]
             node_name2 = network.nodes[str(node)]['name']
-            if node_name != node_name2:continue
+            if node_name != node_name2:
+                continue
             node_code = input_word_code_dict[node_name]
             logger.info('process id = {b}, handling the {a} input word'.format(a=cnt, b=os.getpid()))
             synonym_dict = self.cal_sim(str(node), network)
             if synonym_dict is not None:
                 temp_list = [k for (k, v) in synonym_dict ]
                 line += node_code + '\t' + node_name + '\t' + '|'.join(temp_list) + '\n'
+
+                rs[node_name] = []
+                for nword, score in synonym_dict:
+                    if node_name == nword:
+                        continue
+                    rs[node_name].append((nword, score))
+
         logger.info('process id = {a}, start write file......'.format(a=os.getpid()))
         with lock:
             with open('../output/semantic_network_model_synonym.txt', 'a', encoding='utf8') as f:
                 f.write(line)
+        return rs
 
     def synonym_detect(self, input_word_code_dict, id2word):
         import math
         lock = Lock()
         logger.info(' start detect synonym......')
-        partition = math.ceil(len(self.input_word_id) / self.processes)
-        start, end = 0, partition
-        pro_list = []
-        word_num = len(self.input_word_id)
-        if word_num < self.processes:
-            logger.info('error!! the number of process is more than the number of input words')
-            return
-        for i in range(self.processes):
-            if end > word_num: break
-            word_id = self.input_word_id[start:end]
-            p = Process(target=self.synonym, args=(word_id, self.network, lock,  input_word_code_dict, id2word))
-            pro_list.append(p)
-            p.start()
-            start, end = end, min(end + partition, word_num)
-        for p in pro_list:
-            p.join()
+        rs = self.synonym(self.input_word_ids, self.network, lock,  input_word_code_dict, id2word)
+        # partition = math.ceil(len(self.input_word_ids) / self.processes)
+        # start, end = 0, partition
+        # pro_list = []
+        # word_num = len(self.input_word_ids)
+        # if word_num < self.processes:
+        #     logger.info('error!! the number of process is more than the number of input words')
+        #     return
+        # for i in range(self.processes):
+        #     if end > word_num: break
+        #     word_id = self.input_word_ids[start:end]
+        #     p = Process(target=self.synonym, args=(word_id, self.network, lock,  input_word_code_dict, id2word))
+        #     pro_list.append(p)
+        #     p.start()
+        #     start, end = end, min(end + partition, word_num)
+        # for p in pro_list:
+        #     p.join()
         logger.info('done!!!')
+        return rs
 
 
 def read_network(graph_file):
@@ -225,7 +237,7 @@ def read_network(graph_file):
             line = f.readline()
     return G
 
-def synonym_detect(corpus_path, input_word_id, input_word_code_dict, id2word, word2id, win_len, top_k, process_number):
+def synonym_detect(corpus_path, input_word_ids, input_word_code_dict, id2word, word2id, win_len, top_k, process_number):
 
     graph_file = '../temp/network/co_network.txt'
 
@@ -239,12 +251,13 @@ def synonym_detect(corpus_path, input_word_id, input_word_code_dict, id2word, wo
     generate_network_from_corpus(args)
 
     model = sn_model(
-        input_word_id=input_word_id,
+        input_word_ids=input_word_ids,
         processes=process_number,
         graph_path=graph_file,
         top_k=top_k
     )
-    model.synonym_detect(input_word_code_dict, id2word)
+    rs = model.synonym_detect(input_word_code_dict, id2word)
+    return rs
 
 
 if __name__ == '__main__':

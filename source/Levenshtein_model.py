@@ -49,6 +49,7 @@ class Levenshtein_model():
     def synonym_detect(self, base_word, lock, input_word_code_dict):
         word_synonym = {}
         cnt = 0
+        rs = {}
         for word in base_word:
             cnt += 1
             logger.info('process {b}, calculating the {a} base word......'.format(a=cnt, b=os.getpid()))
@@ -58,6 +59,13 @@ class Levenshtein_model():
                 dis_dict[candi] = dis
             synonyms = sorted(dis_dict.items(), key=lambda e:e[1], reverse=True)
             word_synonym[word] = synonyms[0:self.top_k]
+
+            rs[word] = []
+            for nword, score in word_synonym[word]:
+                if word == nword:
+                    continue
+                rs[word].append((nword, score))
+
         line = ""
         for word in word_synonym.keys():
             values = word_synonym[word]
@@ -70,29 +78,33 @@ class Levenshtein_model():
             with open('../output/Levenshtein_model_synonym.txt', 'a', encoding='utf8') as f:
                 f.write(line)
 
+        return rs
+
     def multipro_synonym_detect(self, input_word_code_dict):
         if os.path.exists('../output/Levenshtein_model_synonym.txt'):
             os.remove('../output/Levenshtein_model_synonym.txt')
         lock = Lock()
-        import math
-        logger.info('start detecting synonym ......')
-        partition = math.ceil(len(self.base_word) / self.processe_number)
-        start, end = 0, partition
-        pro_list = []
-        word_num = len(self.base_word)
-        if word_num < self.processe_number:
-            logger.info('error, process number more than the amount of base word!')
-            return
-        for i in range(self.processe_number):
-            if end > word_num: break
-            word_id = self.base_word[start:end]
-            p = Process(target=self.synonym_detect, args=(word_id, lock, input_word_code_dict))
-            pro_list.append(p)
-            p.start()
-            start, end = end, min(end + partition, word_num)
-        for p in pro_list:
-            p.join()
+        rs = self.synonym_detect(self.base_word, lock, input_word_code_dict)
+        # import math
+        # logger.info('start detecting synonym ......')
+        # partition = math.ceil(len(self.base_word) / self.processe_number)
+        # start, end = 0, partition
+        # pro_list = []
+        # word_num = len(self.base_word)
+        # if word_num < self.processe_number:
+        #     logger.info('error, process number more than the amount of base word!')
+        #     return
+        # for i in range(self.processe_number):
+        #     if end > word_num: break
+        #     word_id = self.base_word[start:end]
+        #     p = Process(target=self.synonym_detect, args=(word_id, lock, input_word_code_dict))
+        #     pro_list.append(p)
+        #     p.start()
+        #     start, end = end, min(end + partition, word_num)
+        # for p in pro_list:
+        #     p.join()
         logger.info('finished！......')
+        return rs
 
 
 def get_pinyin(chinese_word):
