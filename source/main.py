@@ -5,7 +5,7 @@ import pymysql
 from synonym_detect import data_utils, word2vec_model, semantic_network_model, Levenshtein_model
 
 
-def run(corpus_path, input_word_path, stop_word_path='../input/stop_words.txt', top_k=10):
+def run(corpus_path, input_word_path, stop_word_path='../input/stop_words.txt', top_k=5):
 
     top_k += 1
 
@@ -167,7 +167,7 @@ def run(corpus_path, input_word_path, stop_word_path='../input/stop_words.txt', 
 corpus_path = '../input/三体.txt'
 input_word_path = '../input/input_words.txt'
 stop_word_path = '../input/stop_words.txt'
-top_k = 10
+top_k = 5
 
 if __name__ == '__main__':
     run(corpus_path, input_word_path, stop_word_path, top_k)
