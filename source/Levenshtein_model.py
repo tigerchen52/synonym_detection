@@ -22,6 +22,7 @@ class Levenshtein_model():
             top_k=15,
             process_number=10
     ):
+        # 初始化，没什么特别的，就是把外部的参数传到对象里去
         self.base_word = input_word
         self.candidate_word = candidate_word
         self.if_use_pinyin = if_use_pinyin
@@ -37,6 +38,7 @@ class Levenshtein_model():
                 self.can_py_dict[w] = py
 
     def calculate_similarity(self, w1, w2):
+        # 这主要就是调用 Levenshtein 的 ratio 方法来获取两个词的相似度
         leven_dis = Levenshtein.ratio(w1, w2)
         leven_py_dis = 0.0
         if self.if_use_pinyin:
@@ -47,6 +49,7 @@ class Levenshtein_model():
         return similarity
 
     def synonym_detect(self, base_word, lock, input_word_code_dict):
+        # 核心处理过程
         word_synonym = {}
         cnt = 0
         rs = {}
@@ -55,17 +58,22 @@ class Levenshtein_model():
             logger.info('process {b}, calculating the {a} base word......'.format(a=cnt, b=os.getpid()))
             dis_dict = {}
             for candi in self.candidate_word:
+                # 调用 calculate_similarity 方法计算两个词的相似度
+                # 这个相似度是判断近义词的重要标准
                 dis = self.calculate_similarity(word, candi)
                 dis_dict[candi] = dis
             synonyms = sorted(dis_dict.items(), key=lambda e:e[1], reverse=True)
             word_synonym[word] = synonyms[0:self.top_k]
 
+            # 把满足条件的近义词存入一个集合中
+            # rs 结构为 {'原词': [('近义词1', '0.91'), ('近义词2', '0.68'), ...], ...}
             rs[word] = []
             for nword, score in word_synonym[word]:
                 if word == nword:
                     continue
                 rs[word].append((nword, score))
 
+        # 这是把结果写入文件，我们现在用 mysql 存储，所以下面这段可以删掉不用
         line = ""
         for word in word_synonym.keys():
             values = word_synonym[word]
@@ -84,6 +92,9 @@ class Levenshtein_model():
         if os.path.exists('../output/Levenshtein_model_synonym.txt'):
             os.remove('../output/Levenshtein_model_synonym.txt')
         lock = Lock()
+        # 原来这里为了加快速度，使用多进程，并发异步处理
+        # 因为我们现在要同步的输出到 mysql，所以这里改成单进程运行
+        # 也就是直接调用 synonym_detect 方法
         rs = self.synonym_detect(self.base_word, lock, input_word_code_dict)
         # import math
         # logger.info('start detecting synonym ......')
