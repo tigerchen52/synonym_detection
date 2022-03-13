@@ -1,0 +1,13 @@
+reverend        clergyman
+lanes   lane
+pupil   student__educatee__schoolchild
+limitations     limitation
+lateral sidelong
+lovers  lover__fan
+intentions      intention__intent__purpose__aim
+securities      security
+prohibition     proscription
+acute   ague
+emissions       emission__expelling__discharge
+upgrade climb__raise__rise
+notation        note

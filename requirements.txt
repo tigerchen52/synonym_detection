@@ -1,0 +1,4 @@
+torch==1.7.1
+python-Levenshtein==0.12.2
+pytorch-metric-learning==0.9.99
+numpy==1.17.4
