@@ -29,10 +29,11 @@ def get_text_from_tag(tag):
 def get_info_box(soup):
     new_dict = dict()
     # base_info
-    base_info = soup.find(attrs={"class": "basic-info cmn-clearfix"})
+    # 这里做了修改，因为百度百科的html类名变了
+    base_info = soup.find(attrs={"class": "basicInfo_WXCD7 J-basic-info"})
     if base_info is not None:
-        all_name = base_info.find_all(attrs={"class": "basicInfo-item name"})
-        all_value = base_info.find_all(attrs={"class": "basicInfo-item value"})
+        all_name = base_info.find_all(attrs={"class": "basicInfoItem_lqY8m itemName_xwIa8"})
+        all_value = base_info.find_all(attrs={"class": "basicInfoItem_lqY8m itemValue_x_SZF"})
         if len(all_name) != len(all_value):
             logging.error('name and value not equal')
             raise Exception('name and value not equal')
@@ -66,27 +67,26 @@ def baike_synonym_detect(word_code_list):
 def multi_thread_search(params):
     baike_search(params)
 
-
 def baike_search(params):
     key_word, word_code = params
     key_word = data_utils.remove_parentheses(key_word)
     file = open('../output/baike_synonym.txt', 'a', encoding='utf8')
     try:
+        # 解析网页
         base_url = 'https://baike.baidu.com/item/{a}'
         url = url_parse(base_url, key_word)
         response = urllib.request.urlopen(url)
         data = response.read()
-        soup = BeautifulSoup(data)
-
+        soup = BeautifulSoup(data)       
         item_json = dict()
-
         des_dict = get_description(soup)
         item_json.update(des_dict)
-
         info_box_dict = get_info_box(soup)
+        print('1',info_box_dict)
         item_json.update(info_box_dict)
-
+        print(item_json)
         synonym_list = get_synonym(item_json)
+        print(synonym_list)
         if len(synonym_list) > 0:
             write_line = word_code + '\t' + key_word + '\t' + '|'.join(synonym_list) + '\n'
             file.write(write_line)
@@ -101,13 +101,14 @@ def baike_search(params):
 
 
 def get_synonym(baike_json):
-    info_key = ['别称', '英文名称', '又称', '英文别名', '西医学名']
+    info_key = ['别称', '英文名称', '又称', '英文别名', '西医学名','别名','简称','相关词语']
     pattern_list = ['俗称', '简称', '又称']
 
     info_set = set()
     for key in info_key:
         if key in baike_json:
             value = baike_json[key]
+            value = re.sub(r'\[.*?\]', '', value)
             if value[-1] == '等':
                 value = value[:-1]
             value = seg(value)
